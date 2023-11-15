@@ -1,0 +1,12 @@
+{%extends "base.html"%}
+
+{%block content %}
+
+
+    <h1>Hola UTL</h1>
+    <h1>{{titulo}}</h1>
+    {% for van in list %}
+    <p>{{van}}</p>
+    {%endfor%}
+
+    {%endblock%}
