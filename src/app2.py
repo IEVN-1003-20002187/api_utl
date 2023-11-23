@@ -7,6 +7,23 @@ app=Flask(__name__)
 
 con = MySQL(app)
 
+def leer_alumno_bd(mat):
+    try:
+        cursor=con.connection.cursor()
+        sql= "select * from alumnos where matricula = {0}".format(mat)
+        cursor.execute(sql)
+        datos=cursor.fetchone()
+        if datos!=None:
+            alumno={'matricula':datos[0],'nombre':datos[1], 
+                  'apaterno':datos[2], 'amaterno':datos[3],
+                  'correo':datos[4]}
+            return alumno
+        else:
+            return None
+    except Exception as ex:
+       raise ex
+
+
 @app.route('/alumnos', methods=['GET'])
 def list_alumnos():
     try:
@@ -31,18 +48,15 @@ def list_alumnos():
 @app.route('/alumnos/<mat>', methods=['GET'])
 def leer_alumno(mat):
     try:
-        cursor=con.connection.cursor()
-        sql= "select * from alumnos where matricula = {0}".format(mat)
-        cursor.execute(sql)
-        datos=cursor.fetchone()
-        if datos !=None:
-            alum={'matricula':datos[0],'nombre':datos[1], 
-                  'apaterno':datos[2], 'amaterno':datos[3],
-                  'correo':datos[4]}
-            return jsonify({'Alumnos':alum,'mensaje':'el alumno es'})
+        alumnos=leer_alumno_bd(mat)
+        if alumnos !=None:
+            return jsonify({'Alumnos':alumnos,'mensaje':'el alumno fue enocntrado', 'exito':True})
+        
+        else:
+            return jsonify({'mensaje':'Alumno no encontrado', 'exito': False})
         
     except Exception as ex:
-        return jsonify({'mensaje':'{}'}.format(ex))
+        return jsonify({'mensaje':'{}'.format(ex),'exito':False})
 
 
 def pagina_no_encontrada(error):
